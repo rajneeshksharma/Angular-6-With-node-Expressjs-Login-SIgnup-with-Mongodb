@@ -42,17 +42,20 @@ AllUser.findOne(query).then(function(user){
     if(user.password == password) {
       console.log("success");
     }
+    else{
+      console.log('Invalid user name or password');
+    }
   } else{
     console.log("Invalid user name or password");
   }
 
 });
-if(AllUser.findOne(query)){
-  console.log('user valid');
-}
-else{
-  console.log("user invalid");
-}
+// if(AllUser.findOne(query)){
+//   console.log('user valid');
+// }
+// else{
+//   console.log("user invalid");
+// }
 })
 
 
