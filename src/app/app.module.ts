@@ -6,8 +6,10 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
-
-
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AuthGuard } from './index/auth-guard.service';
+import { AuthGuard2 } from './index/auth-guard2.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -18,9 +20,11 @@ import { FormsModule } from '@angular/forms';
     AppRoutingModule,
     ReactiveFormsModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    ToastrModule.forRoot(),
+    BrowserAnimationsModule
   ],
-  providers: [],
+  providers: [AuthGuard, AuthGuard2],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

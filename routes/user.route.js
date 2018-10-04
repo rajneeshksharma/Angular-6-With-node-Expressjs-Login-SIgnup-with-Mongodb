@@ -1,12 +1,8 @@
 const express = require('express');
 const app = express();
 const userRoutes = express.Router();
-
+const jwt = require('jsonwebtoken');
 let AllUser = require('../models/AllUsers');
-
-// userRoutes.post('/add',function(req,res,next) {
-//   console.log("dffffffffffffffffffffffffff:",req.body.name);
-// });
 
 
 userRoutes.route('/add').post(function (req, res) {
@@ -33,6 +29,7 @@ userRoutes.route('/add').post(function (req, res) {
   });
 
 userRoutes.route('/login').post(function(req,res){
+ let result_data = {};
 let email = req.body.email;
 let password = req.body.password;
 var query = { email : email };
@@ -40,23 +37,107 @@ var query2 = { password : password };
 AllUser.findOne(query).then(function(user){
   if(user){
     if(user.password == password) {
-      console.log("success");
+      const JWTToken = jwt.sign({   
+        email: user.email,
+        _id: user._id
+      },
+      'secret', {
+        expiresIn: '2h'
+      });
+      AllUser.update({
+        _id:user._id
+      },{ $set : { token:JWTToken }},
+      function(err,userupdated){
+        if(err){
+          console.log(err);
+        }
+        else{
+          console.log(userupdated);
+        }               
+      });
+    result_data.userInfo = user
+    result_data.token = JWTToken
+    return res.json({
+      code: 200,
+      success: {
+        str1: 'Successfully LoggedIn',
+        str2: ''
+      },
+      data: result_data
+    });
     }
     else{
-      console.log('Invalid user name or password');
+      return res.json({
+        code: 401,
+        failed: 'Unauthorized Access'
+      });
     }
   } else{
-    console.log("Invalid user name or password");
+    res.status(500).json({
+      // error: error
+    });
   }
 
 });
-// if(AllUser.findOne(query)){
-//   console.log('user valid');
-// }
-// else{
-//   console.log("user invalid");
-// }
-})
+
+});
+// userRoutes.route('/login').post(function (req, res, next) {
+//     console.log(req.body,"rk");
+//     let result_data = {};
+//     User.findOne({
+//         email: req.body.email
+//       })
+//       .exec()
+//       .then(function (user) {
+//         bcrypt.compare(req.body.password, user.password, function (err, result) {
+//           if (err) {
+//             return res.status(401).json({
+//               failed: 'Unauthorized Access'
+//             });
+//           }
+
+//           if (result) {
+//             const JWTToken = jwt.sign({
+//                 email: user.email,
+//                 _id: user._id
+//               },
+//               'secret', {
+//                 expiresIn: '2h'
+//               });
+//               User.update({
+//                 _id:user._id
+//               },{ $set : { token:JWTToken }},
+//               function(err,userupdated){
+//                 if(err){
+//                   console.log(err);
+//                 }
+//                 else{
+//                   console.log(userupdated);
+//                 }               
+//               });
+//             result_data.userInfo = user
+//             result_data.token = JWTToken
+//             return res.json({
+//               code: 200,
+//               success: {
+//                 str1: 'Successfully LoggedIn',
+//                 str2: ''
+//               },
+//               data: result_data
+//             });
+//           }
+//           return res.json({
+//             code: 401,
+//             failed: 'Unauthorized Access'
+//           });
+//         });
+//       })
+//       .catch(error => {
+//         res.status(500).json({
+//           error: error
+//         });
+//       });
+//   });
 
 
   module.exports = userRoutes;

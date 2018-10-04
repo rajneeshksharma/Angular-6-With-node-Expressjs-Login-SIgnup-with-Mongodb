@@ -4,6 +4,7 @@ const express = require ('express');
     cors = require ('cors');
     mongoose = require ('mongoose');
     config = require('./Config/DB');
+    const jwt = require('jsonwebtoken');
     const app = express();
     app.use(cors());
     mongoose.Promise =global.Promise
